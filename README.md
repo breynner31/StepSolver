@@ -104,7 +104,26 @@ pip install -r requirements.txt
 
 ## 📁 Estructura del proyecto
 
-StepSolver/ │ ├── app/ │ ├── controllers/ │ │ └── solve_controller.py │ ├── services/ │ │ ├── solver_service.py │ │ └── tts_service.py │ └── static/ │ └── audio/ │ └── results.mp3 │ ├── main.py ├── requirements.txt └── README.md  
+```
+StepSolver/
+│
+├── app/
+│   ├── controllers/
+│   │   └── solve_controller.py
+│   │
+│   ├── services/
+│   │   ├── solver_service.py
+│   │   └── tts_service.py
+│   │
+│   ├── main.py
+│
+├── static/
+│   └── audio/
+│       └── results.mp3
+│
+├── requirements.txt
+└── README.md
+```
 
 ## 🤝 Contribuciones
 
