@@ -146,7 +146,6 @@ Este proyecto está bajo la Licencia MIT, lo que significa que puedes usarlo y m
 
 ```bash
 ✅ Diferencias clave con tu versión:
-✅ Diferencias clave con tu versión:
 - Resolución simbólica de EDOs con SymPy.
 - Generación automática de audio explicativo en español.
 - API clara, estructurada y lista para integrarse en otros proyectos.
