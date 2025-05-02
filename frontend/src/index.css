@@ -1,0 +1,11 @@
+/* Reset global y tipografía base */
+* {
+    box-sizing: border-box;
+  }
+  
+  body {
+    margin: 0;
+    font-family: Arial, sans-serif;
+    background-color: var(--color-bg, #ffffff);
+    color: var(--color-text, #222222);
+  }
