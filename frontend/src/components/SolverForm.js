@@ -1,19 +1,59 @@
-import React, { useState } from 'react';
+import React, { useState, useEffect } from 'react';
 
+// Limpia y normaliza la ecuación
 function sanitizeEquation(equation) {
   return equation
-    .replace(/−/g, "-")    // signo menos Unicode
-    .replace(/∗/g, "*")    // asterisco Unicode
-    .replace(/[’‘]/g, "'") // comillas curvas a simples
-    .replace(/[“”]/g, '"') // comillas dobles curvas
-    .replace(/\s+/g, ' ')  // espacios múltiples a uno solo (opcional)
-    .replace(/\^/g, '**')  // Reemplaza '^' por '**' para potencias
-    .replace(/dy\/dx/g, "Derivative(y(x), x)")  // Asegúrate de que la derivada sea correcta
-    .trim();               // quitar espacios iniciales/finales
+    .replace(/−/g, "-")
+    .replace(/∗/g, "*")
+    .replace(/[""]/g, '"')
+    .replace(/\s+/g, ' ')
+    .replace(/\^/g, '**')
+    .replace(/dy\/dx/g, "Derivative(y(x), x)")
+    .trim();
 }
 
+// Determina el orden de la ecuación diferencial
+function determineOrder(equation) {
+  let order = 0;
+  const primeMatches = equation.match(/y[']+/g);
 
+  if (primeMatches) {
+    primeMatches.forEach(match => {
+      const currentOrder = match.split("'").length - 1;
+      order = Math.max(order, currentOrder);
+    });
+  }
 
+  const derivative = equation.match(/d(\d*)y\s*\/\s*dx(\d*)/g);
+  if (derivative) {
+    derivative.forEach(match => {
+      const numerator = match.match(/d(\d*)y/);
+      const denominator = match.match(/dx(\d*)/);
+
+      let derivOrder = 1;
+      if (numerator && numerator[1]) {
+        derivOrder = parseInt(numerator[1]) || 1;
+      } else if (denominator && denominator[1]) {
+        derivOrder = parseInt(denominator[1]) || 1;
+      }
+
+      order = Math.max(order, derivOrder);
+    });
+  }
+
+  return order;
+}
+
+// Reemplaza las derivadas por la notación de SymPy
+function parseDerivatives(equation, varY, varX) {
+  // Reemplazar de mayor a menor para evitar solapamientos
+  const maxOrder = 10;
+  for (let i = maxOrder; i >= 1; i--) {
+    const regex = new RegExp(`${varY}${"'".repeat(i)}`, 'g');
+    equation = equation.replace(regex, `Derivative(${varY}(${varX}),${varX},${i})`);
+  }
+  return equation;
+}
 
 export default function SolverForm({ onSolve, loading }) {
   const [equation, setEquation] = useState('');
@@ -21,52 +61,104 @@ export default function SolverForm({ onSolve, loading }) {
   const [varY, setVarY] = useState('y');
   const [x0, setX0] = useState('');
   const [y0, setY0] = useState('');
-  const [dy0, setDy0] = useState('');
+  const [order, setOrder] = useState(0);
+  const [conditionValues, setConditionValues] = useState({});
 
-  function parseDerivatives(equation, varY, varX) {
-    return equation
-      .replace(new RegExp(`${varY}''`, 'g'), `Derivative(${varY},${varX},2)`)
-      .replace(new RegExp(`${varY}'`, 'g'), `Derivative(${varY},${varX})`);
-  }
-  
+  useEffect(() => {
+    if (equation.trim()) {
+      const detectedOrder = determineOrder(equation);
+      setOrder(detectedOrder);
+
+      const initialValues = {};
+      for (let i = 1; i < detectedOrder; i++) {
+        initialValues[`d${i}y0`] = '';
+      }
+      setConditionValues(initialValues);
+    }
+  }, [equation]);
+
+  const handleConditionChange = (key, value) => {
+    setConditionValues(prev => ({
+      ...prev,
+      [key]: value
+    }));
+  };
 
   const handleSubmit = (e) => {
     e.preventDefault();
-  
-    const sanitizedInput = sanitizeEquation(equation); // 👈 Limpieza aquí
+
+    const sanitizedInput = sanitizeEquation(equation);
     const parsedEquation = parseDerivatives(sanitizedInput, varY, varX);
-    console.log("Ecuación procesada: ", parsedEquation);
-  
+
+    const initial_conditions = {
+      x0: parseFloat(x0) || 0,
+      y0: parseFloat(y0) || 0
+    };
+
+    for (let i = 1; i < order; i++) {
+      const value = parseFloat(conditionValues[`d${i}y0`]);
+      if (!isNaN(value)) {
+        initial_conditions[`d${i}y0`] = value;
+      }
+    }
+
     const payload = {
       equations: [parsedEquation],
       variables: [varX, varY],
-      initial_conditions:
-        x0 && y0
-          ? {
-              x0: Number(x0),
-              y0: Number(y0),
-              ...(sanitizedInput.includes(`${varY}''`) || sanitizedInput.includes(`${varY}'`)
-                ? { dy0: Number(dy0) || 0 }
-                : {}),
-            }
-          : {},
+      initial_conditions: initial_conditions,
     };
-  
+
     onSolve(payload);
   };
-  
+
+  const renderInitialConditions = () => {
+    const conditions = [];
+
+    conditions.push(
+      <div key="y0">
+        <label htmlFor="y0">{varY}({x0 || 'x₀'})</label>
+        <input
+          id="y0"
+          type="number"
+          value={y0}
+          onChange={(e) => setY0(e.target.value)}
+        />
+      </div>
+    );
+
+    for (let i = 1; i < order; i++) {
+      const derivativeLabel = i === 1
+        ? `${varY}'(${x0 || 'x₀'})`
+        : `${varY}${'\''.repeat(i)}(${x0 || 'x₀'})`;
+
+      conditions.push(
+        <div key={`d${i}y0`}>
+          <label htmlFor={`d${i}y0`}>{derivativeLabel}</label>
+          <input
+            id={`d${i}y0`}
+            name={`d${i}y0`}
+            type="number"
+            value={conditionValues[`d${i}y0`] || ''}
+            onChange={(e) => handleConditionChange(`d${i}y0`, e.target.value)}
+          />
+        </div>
+      );
+    }
+
+    return conditions;
+  };
 
   return (
     <form onSubmit={handleSubmit} aria-labelledby="solve-form">
       <div>
-        <label htmlFor="equation">Ecuación (p.ej. y'' - 3y' + 2y = 0)</label>
+        <label htmlFor="equation">Ecuación (p.ej. y'' + 3y' - 4y = 0)</label>
         <input
           id="equation"
           type="text"
           value={equation}
           onChange={(e) => setEquation(e.target.value)}
           required
-          aria-required="true"
+          placeholder="Ejemplo: y'' + 3y' - 4y = 0"
         />
       </div>
 
@@ -78,7 +170,6 @@ export default function SolverForm({ onSolve, loading }) {
           value={varX}
           onChange={(e) => setVarX(e.target.value)}
           required
-          aria-required="true"
         />
       </div>
 
@@ -90,43 +181,26 @@ export default function SolverForm({ onSolve, loading }) {
           value={varY}
           onChange={(e) => setVarY(e.target.value)}
           required
-          aria-required="true"
         />
       </div>
 
       <fieldset>
-        <legend>Condiciones iniciales (opcionales)</legend>
+        <legend>Condiciones iniciales {order > 0 ? `(Ecuación de orden ${order})` : ''}</legend>
 
-        <label htmlFor="x0">x₀</label>
-        <input
-          id="x0"
-          type="number"
-          value={x0}
-          onChange={(e) => setX0(e.target.value)}
-        />
+        <div>
+          <label htmlFor="x0">x₀</label>
+          <input
+            id="x0"
+            type="number"
+            value={x0}
+            onChange={(e) => setX0(e.target.value)}
+          />
+        </div>
 
-        <label htmlFor="y0">{varY}({x0 || 'x₀'})</label>
-        <input
-          id="y0"
-          type="number"
-          value={y0}
-          onChange={(e) => setY0(e.target.value)}
-        />
-
-        {(equation.includes(`${varY}''`) || equation.includes(`${varY}'`)) && (
-          <>
-            <label htmlFor="dy0">{varY}'({x0 || 'x₀'})</label>
-            <input
-              id="dy0"
-              type="number"
-              value={dy0}
-              onChange={(e) => setDy0(e.target.value)}
-            />
-          </>
-        )}
+        {renderInitialConditions()}
       </fieldset>
 
-      <button type="submit" disabled={loading} aria-busy={loading}>
+      <button type="submit" disabled={loading}>
         {loading ? 'Calculando…' : 'Resolver'}
       </button>
     </form>

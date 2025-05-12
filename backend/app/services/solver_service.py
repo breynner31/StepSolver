@@ -20,16 +20,20 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
         # Reemplazar potencias tipo x^2 por x**2
         eq = eq.replace('^', '**')
 
-        # Reemplazar derivadas tipo y'' y y'
-        eq = eq.replace('dy/dx', f'Derivative({variables[1]}({variables[0]}), {variables[0]})')
-        eq = re.sub(rf"\b{variables[1]}'''", f'Derivative({variables[1]}({variables[0]}), {variables[0]}, 3)', eq)
-        eq = re.sub(rf"\b{variables[1]}''", f'Derivative({variables[1]}({variables[0]}), {variables[0]}, 2)', eq)
-        eq = re.sub(rf"\b{variables[1]}'", f'Derivative({variables[1]}({variables[0]}), {variables[0]})', eq)
+        # Reemplazar derivadas: y'', y''', ..., hasta y^{(10)}
+        for order in range(10, 0, -1):
+            apostrophes = "'" * order
+            pattern = rf"\b{variables[1]}{re.escape(apostrophes)}\b"
+            replacement = f"Derivative({variables[1]}({variables[0]}), {variables[0]}, {order})"
+            eq = re.sub(pattern, replacement, eq)
 
-        # Insertar * entre número y letra, como 3y → 3*y, 4x → 4*x
+        # Reemplazo de y' = primera derivada (solo si no se capturó antes)
+        eq = re.sub(rf"\b{variables[1]}'\b", f'Derivative({variables[1]}({variables[0]}), {variables[0]})', eq)
+
+        # Insertar * entre número y letra
         eq = re.sub(r'(\d)([a-zA-Z\(])', r'\1*\2', eq)
 
-        # Asegurar que "y" se convierte en "y(x)" si no está ya como y(x)
+        # Asegurar y → y(x) si no es derivada ni parte de algo ya reemplazado
         eq = re.sub(rf"\b{variables[1]}\b(?!\()", f'{variables[1]}({variables[0]})', eq)
 
         return eq
@@ -67,6 +71,15 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             x0 = initial_conditions.get("x0")
             y0 = initial_conditions.get("y0")
             dy0 = initial_conditions.get("dy0")
+            d2y0 = initial_conditions.get("d2y0")
+            d3y0 = initial_conditions.get("d3y0")
+            d4y0 = initial_conditions.get("d4y0")
+            d5y0 = initial_conditions.get("d5y0")
+            d6y0 = initial_conditions.get("d6y0")
+            d7y0 = initial_conditions.get("d7y0")
+            d8y0 = initial_conditions.get("d8y0")
+            d9y0 = initial_conditions.get("d9y0")
+            d10y0 = initial_conditions.get("d10y0")
 
             ics = {}
             if x0 is not None:
@@ -83,6 +96,69 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
                         "title": "Condición inicial aplicada",
                         "description": f"Se usa la condición y'({x0}) = {dy0}",
                         "latex_description": f"\\text{{Se usa la condición }} y'({x0}) = {dy0}"
+                    })
+                if d2y0 is not None:
+                    ics[Derivative(y, x, 2).subs(x, x0)] = d2y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y''({x0}) = {d2y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y''({x0}) = {d2y0}"
+                    })
+                if d3y0 is not None:
+                    ics[Derivative(y, x, 3).subs(x, x0)] = d3y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(3)}}({x0}) = {d3y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(3)}}({x0}) = {d3y0}"
+                    })
+                if d4y0 is not None:
+                    ics[Derivative(y, x, 4).subs(x, x0)] = d4y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(4)}}({x0}) = {d4y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(4)}}({x0}) = {d4y0}"
+                    })
+                if d5y0 is not None:
+                    ics[Derivative(y, x, 5).subs(x, x0)] = d5y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(5)}}({x0}) = {d5y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(5)}}({x0}) = {d5y0}"
+                    })
+                if d6y0 is not None:
+                    ics[Derivative(y, x, 6).subs(x, x0)] = d6y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(6)}}({x0}) = {d6y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(6)}}({x0}) = {d6y0}"
+                    })
+                if d7y0 is not None:
+                    ics[Derivative(y, x, 7).subs(x, x0)] = d7y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(7)}}({x0}) = {d7y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(7)}}({x0}) = {d7y0}"
+                    })
+                if d8y0 is not None:
+                    ics[Derivative(y, x, 8).subs(x, x0)] = d8y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(8)}}({x0}) = {d8y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(8)}}({x0}) = {d8y0}"
+                    })
+                if d9y0 is not None:
+                    ics[Derivative(y, x, 9).subs(x, x0)] = d9y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(9)}}({x0}) = {d9y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(9)}}({x0}) = {d9y0}"
+                    })
+                if d10y0 is not None:
+                    ics[Derivative(y, x, 10).subs(x, x0)] = d10y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y^{{(10)}}({x0}) = {d10y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y^{{(10)}}({x0}) = {d10y0}"
                     })
 
             # Resolver con condiciones iniciales si hay alguna
