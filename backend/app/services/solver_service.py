@@ -9,35 +9,43 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
     y_func = Function(variables[1])
     y = y_func(x)
 
-    # Diccionario local para mapear las variables
+    # Diccionario local para evaluar expresiones
     local_dict = {
         variables[0]: x,
         variables[1]: y_func,
-        f'{variables[1]}({variables[0]}': y,
+        f'{variables[1]}({variables[0]})': y,
     }
 
     def preprocess_equation(eq):
-        # Reemplaza diff por Derivative, para hacerlo compatible con sympy
-        eq = eq.replace('dy/dx', 'Derivative(y(x), x)')
+        # Reemplazar potencias tipo x^2 por x**2
+        eq = eq.replace('^', '**')
+
+        # Reemplazar derivadas tipo y'' y y'
+        eq = eq.replace('dy/dx', f'Derivative({variables[1]}({variables[0]}), {variables[0]})')
+        eq = re.sub(rf"\b{variables[1]}'''", f'Derivative({variables[1]}({variables[0]}), {variables[0]}, 3)', eq)
         eq = re.sub(rf"\b{variables[1]}''", f'Derivative({variables[1]}({variables[0]}), {variables[0]}, 2)', eq)
         eq = re.sub(rf"\b{variables[1]}'", f'Derivative({variables[1]}({variables[0]}), {variables[0]})', eq)
 
-        # Reemplaza y por y(x), excepto si ya está en forma de función como y(x)
-        eq = re.sub(rf"\b{variables[1]}\b(?!\s*\()", f'{variables[1]}({variables[0]})', eq)
+        # Insertar * entre número y letra, como 3y → 3*y, 4x → 4*x
+        eq = re.sub(r'(\d)([a-zA-Z\(])', r'\1*\2', eq)
+
+        # Asegurar que "y" se convierte en "y(x)" si no está ya como y(x)
+        eq = re.sub(rf"\b{variables[1]}\b(?!\()", f'{variables[1]}({variables[0]})', eq)
 
         return eq
 
     try:
-        # Preprocesamiento de la ecuación
-        equation_str = preprocess_equation(equations[0])
+        # Limpiar comillas extra si existen
+        raw_eq = equations[0].strip('"').strip("'")
+        equation_str = preprocess_equation(raw_eq)
+
+        print(f"[INFO] Ecuación procesada: {equation_str}")
+
         lhs_str, rhs_str = map(str.strip, equation_str.split('='))
+        print(f"[INFO] Lado izquierdo: {lhs_str}, Lado derecho: {rhs_str}")
 
-        print(f"Ecuación procesada: {equation_str}")
-        print(f"Lado izquierdo: {lhs_str}, Lado derecho: {rhs_str}")
-
-        # Usar sympify para convertir la ecuación a un objeto sympy
-        lhs = sympify(lhs_str)
-        rhs = sympify(rhs_str)
+        lhs = sympify(lhs_str, locals=local_dict)
+        rhs = sympify(rhs_str, locals=local_dict)
         eq = Eq(lhs, rhs)
 
         steps.append({
@@ -46,7 +54,7 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             "latex_description": f"\\text{{Se reescribe como: }} {latex(eq)}"
         })
 
-        # Resolver la ecuación
+        # Resolver la ecuación general
         sol = dsolve(eq, y)
         steps.append({
             "title": "Solución general",
@@ -54,30 +62,42 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             "latex_description": f"y(x) = {latex(sol.rhs)}"
         })
 
-        # Si hay condiciones iniciales
+        # Aplicar condiciones iniciales si existen
         if initial_conditions:
             x0 = initial_conditions.get("x0")
             y0 = initial_conditions.get("y0")
-            if x0 is not None and y0 is not None:
-                ics = {y.subs(x, x0): y0}
+            dy0 = initial_conditions.get("dy0")
+
+            ics = {}
+            if x0 is not None:
+                if y0 is not None:
+                    ics[y.subs(x, x0)] = y0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y({x0}) = {y0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y({x0}) = {y0}"
+                    })
+                if dy0 is not None:
+                    ics[Derivative(y, x).subs(x, x0)] = dy0
+                    steps.append({
+                        "title": "Condición inicial aplicada",
+                        "description": f"Se usa la condición y'({x0}) = {dy0}",
+                        "latex_description": f"\\text{{Se usa la condición }} y'({x0}) = {dy0}"
+                    })
+
+            # Resolver con condiciones iniciales si hay alguna
+            if ics:
                 particular_solution = dsolve(eq, y, ics=ics)
                 simplified = simplify(particular_solution.rhs)
-
-                steps.append({
-                    "title": "Aplicando condiciones iniciales",
-                    "description": f"Se usa la condición y({x0}) = {y0} para encontrar C1",
-                    "latex_description": f"\\text{{Se usa la condición }} y({x0}) = {y0} \\text{{ para encontrar }} C_1"
-                })
 
                 steps.append({
                     "title": "Solución particular",
                     "description": f"y(x) = {str(simplified)}",
                     "latex_description": f"y(x) = {latex(simplified)}"
                 })
-            else:
-                raise ValueError("Se requieren condiciones iniciales válidas.")
 
     except Exception as e:
+        print(f"[ERROR] {str(e)}")
         steps.append({
             "title": "Error",
             "description": f"Ocurrió un error al procesar la ecuación: {str(e)}",
