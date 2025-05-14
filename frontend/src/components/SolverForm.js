@@ -46,7 +46,6 @@ function determineOrder(equation) {
 
 // Reemplaza las derivadas por la notación de SymPy
 function parseDerivatives(equation, varY, varX) {
-  // Reemplazar de mayor a menor para evitar solapamientos
   const maxOrder = 10;
   for (let i = maxOrder; i >= 1; i--) {
     const regex = new RegExp(`${varY}${"'".repeat(i)}`, 'g');

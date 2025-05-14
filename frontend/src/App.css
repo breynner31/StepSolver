@@ -33,6 +33,7 @@ button {
   background-color: var(--color-primary);
   color: #fff;
   border: none;
+  margin-top: 20px;
   padding: 0.6rem 1.2rem;
   font-size: 1rem;
   cursor: pointer;
@@ -66,9 +67,58 @@ label {
   padding: 0.5rem 1rem;
   background: #fafafa;
   border-radius: 4px;
+  overflow-x: auto;
 }
 
 .step-title {
   font-size: 1.1rem;
   margin-bottom: 0.3rem;
 } 
+
+.katex-display {
+  overflow-x: auto;
+  max-width: 100%;
+  white-space: normal;
+  word-wrap: break-word;
+  word-break: break-word;
+}
+
+/* Daltonismo - Alto contraste (Protanopía / Deuteranopía) */
+.theme-yellow-on-black {
+  --color-bg: #000000;
+  --color-text: #ffff00;
+  --color-primary: #ffff00;
+  --color-secondary: #cccc00;
+  --color-border: #ffff00;
+  --color-focus: #ff00ff;
+}
+
+/* Daltonismo - Azul oscuro sobre blanco */
+.theme-blue-on-white {
+  --color-bg: #ffffff;
+  --color-text: #003366;
+  --color-primary: #3366cc;
+  --color-secondary: #2244aa;
+  --color-border: #003366;
+  --color-focus: #ff6600;
+}
+
+/* Daltonismo - Rosa sobre gris oscuro */
+.theme-pink-on-gray {
+  --color-bg: #1e1e1e;
+  --color-text: #ffc0cb;
+  --color-primary: #ff69b4;
+  --color-secondary: #ff1493;
+  --color-border: #ffc0cb;
+  --color-focus: #00ffff;
+}
+
+/* Daltonismo - Verde claro sobre negro */
+.theme-green-on-black {
+  --color-bg: #000000;
+  --color-text: #98fb98;
+  --color-primary: #98fb98;
+  --color-secondary: #32cd32;
+  --color-border: #98fb98;
+  --color-focus: #00ff00;
+}
