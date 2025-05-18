@@ -1,11 +1,27 @@
-/* Reset global y tipografía base */
-* {
-    box-sizing: border-box;
-  }
-  
-  body {
-    margin: 0;
-    font-family: Arial, sans-serif;
-    background-color: var(--color-bg, #ffffff);
-    color: var(--color-text, #222222);
-  }
+:root {
+  --color-bg: #121212;
+  --color-text: #ffffff;
+  --color-input: #1e1e1e;
+  --color-border: #444;
+}
+
+body {
+  margin: 0;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  font-family: sans-serif;
+}
+
+input,
+select,
+textarea {
+  background-color: var(--color-input);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 8px;
+  border-radius: 4px;
+}
+
+label {
+  color: var(--color-text);
+}
