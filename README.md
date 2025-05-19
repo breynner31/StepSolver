@@ -2,24 +2,34 @@
 
 ## 📌 Descripción
 
-**StepSolver** es una API desarrollada con **Flask** en Python que permite resolver **Ecuaciones Diferenciales Ordinarias (EDO)** de forma simbólica utilizando `SymPy`.  
-Además de mostrar una solución paso a paso en formato LaTeX, genera una **lectura por voz** del procedimiento en español usando `gTTS`.
+**StepSolver** es una plataforma web desarrollada con **React**(frontend) y **Python**(backend) que permite resolver **Ecuaciones Diferenciales Ordinarias (EDO)** de forma simbólica utilizando `SymPy`.  
+Además de mostrar una solución paso a paso en formato LaTeX, genera una **lectura por voz** del procedimiento en español usando `gTTS` y ofrece modos de contraste para mejorar la accesibilidad visual.
+![Normal](https://github.com/user-attachments/assets/39428700-baf6-45c6-b66b-b8c0f94d0451)
 
 ## 🚀 Características
 
-✅ Interpreta ecuaciones diferenciales en notación simbólica.  
-✅ Resuelve paso a paso con explicaciones.  
-✅ Formatea los resultados con soporte LaTeX para uso académico.  
-✅ Genera audio en español explicando cada paso.  
-✅ Devuelve un JSON completo con título, descripción y expresiones en LaTeX.  
-✅ Proporciona una ruta para escuchar la explicación en voz alta (`/static/audio/results.mp3`).
+✅ Interfaz de usuario intuitiva desarrollada en React
+✅ Características de accesibilidad (modos de contraste y tooltips informativos)
+✅ Interpreta ecuaciones diferenciales en notación simbólica
+✅ Resuelve paso a paso con explicaciones detalladas
+✅ Formatea los resultados con soporte LaTeX para uso académico
+✅ Genera audio en español explicando cada paso
+✅ API completa que devuelve JSON con título, descripción y expresiones en LaTeX
+✅ Proporciona una ruta para escuchar la explicación en voz alta (/static/audio/results.mp3)
 
 ## 📦 Instalación
 
-Antes de ejecutar la API, asegúrate de instalar las dependencias necesarias:
+Antes de ejecutar el servidor, asegúrate de instalar las dependencias necesarias:
 
 ```bash
+cd backend
 pip install -r requirements.txt
+```
+
+Antes de ejecutar el frontend, asegúrate de instalar las dependencias necesarias:
+```bash
+cd frontend
+npm install
 ```
 
 ## 🛠️ Uso
@@ -27,9 +37,17 @@ pip install -r requirements.txt
 Inicia el servidor con:
 
 ```bash
+cd backend
 python main.py
 ```
 
+Inicia el frontend con:
+```bash
+cd frontend
+npm run start
+```
+
+**Uso de la API directamente**
 Envía una solicitud POST al endpoint:
 
 ```bash
@@ -86,9 +104,30 @@ Puedes acceder al audio generado en:
 /static/audio/results.mp3
 ```
 
+## 🌈 Accesibilidad
+
+-La plataforma incluye:
+-Múltiples modos de contraste para mejorar la visibilidad
+-Tooltips informativos que guían al usuario sobre cada elemento y función de la plataforma
+-Audio descriptivo para explicaciones paso a paso
+
+## 🌓 Modos de contraste
+
+-**Amarillo sobre negro (Alto contraste):**
+![Amarillo sobre negro (Alto contraste) ](https://github.com/user-attachments/assets/22107dcd-8c4c-422d-bce2-2f30cee499e6)
+
+-**Azul oscuro sobre blanco:**
+![Azul oscuro sobre blanco](https://github.com/user-attachments/assets/00535e10-a904-4d13-a57c-2e22fdb20171)
+
+-**Rosa sobre gris oscuro:**
+![Rosa sobre gris oscuro](https://github.com/user-attachments/assets/1db13710-371e-4924-9ff8-f89ce495d5b2)
+
+-**Verde sobre negro:**
+![Verde sobre negro](https://github.com/user-attachments/assets/b10b6cc8-bff0-48f5-a64b-63bd726f00ff)
+
 ## 📚 Dependencias
 
-Incluidas en requirements.txt:
+Backend (incluidas en requirements.txt):
 
 ```bash
 Flask
@@ -102,27 +141,59 @@ Instálalas con:
 pip install -r requirements.txt
 ```
 
+Frontend:
+
+```bash
+katex
+react-katex
+```
+
+Instálalas con:
+
+```bash
+npm install
+```
+
 ## 📁 Estructura del proyecto
 
 ```
-StepSolver/
-│
-├── app/
-│   ├── controllers/
-│   │   └── solve_controller.py
-│   │
-│   ├── services/
-│   │   ├── solver_service.py
-│   │   └── tts_service.py
-│   │
-│   ├── main.py
-│
-├── static/
-│   └── audio/
-│       └── results.mp3
-│
-├── requirements.txt
-└── README.md
+📁 StepSolver/
+    📄 README.md
+    📁 backend/
+        📁 app/
+            📄 __init__.py
+            📁 controllers/
+                📄 solve_controller.py
+            📁 services/
+                📄 solver_service.py
+                📄 tts_service.py
+        📁 assets/
+            📄 image.png
+        📄 main.py
+        📁 static/
+            📁 audio/
+                📄 results.mp3
+    📁 frontend/
+        📄 README.md
+        📄 package.json
+        📁 public/
+            📄 favicon.ico
+            📄 index.html
+            📄 logo192.png
+            📄 logo512.png
+            📄 manifest.json
+            📄 robots.txt
+        📁 src/
+            📄 App.css
+            📄 App.js
+            📁 components/
+                📄 AudioPlayer.js
+                📄 SolverForm.js
+                📄 StepsDisplay.js
+                📄 Tooltip.js
+            📄 index.css
+            📄 index.js
+    📄 requirements.txt
 ```
 
 ## 🤝 Contribuciones
@@ -145,12 +216,15 @@ Este proyecto está bajo la Licencia MIT, lo que significa que puedes usarlo y m
 ---
 
 ```bash
-✅ Diferencias clave con tu versión:
-- Resolución simbólica de EDOs con SymPy.
-- Generación automática de audio explicativo en español.
-- API clara, estructurada y lista para integrarse en otros proyectos.
-- Soporte para LaTeX, accesibilidad y herramientas educativas.
-- Documentación detallada y visual.
+✅ Diferencias clave con versiones anteriores:
+- Plataforma completa con frontend en React y backend en Python
+- Características de accesibilidad avanzadas (modos de contraste y tooltips informativos)
+- Interfaz de usuario intuitiva para interactuar con las ecuaciones
+- Resolución simbólica de EDOs con SymPy
+- Generación automática de audio explicativo en español
+- API clara, estructurada y lista para integrarse en otros proyectos
+- Soporte para LaTeX, accesibilidad y herramientas educativas
+- Documentación detallada y visual
 
 Si quieres, dime qué más podríamos mejorar o personalizar. 🚀😃
 ```
