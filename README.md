@@ -106,10 +106,10 @@ Puedes acceder al audio generado en:
 
 ## 🌈 Accesibilidad
 
--La plataforma incluye:
--Múltiples modos de contraste para mejorar la visibilidad
--Tooltips informativos que guían al usuario sobre cada elemento y función de la plataforma
--Audio descriptivo para explicaciones paso a paso
+La plataforma incluye:
+- Múltiples modos de contraste para mejorar la visibilidad
+- Tooltips informativos que guían al usuario sobre cada elemento y función de la plataforma
+- Audio descriptivo para explicaciones paso a paso
 
 ## 🌓 Modos de contraste
 
