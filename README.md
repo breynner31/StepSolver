@@ -8,15 +8,15 @@ Además de mostrar una solución paso a paso en formato LaTeX, genera una **lect
 
 ## 🚀 Características
 
-✅ Interfaz de usuario intuitiva desarrollada en React
-✅ Características de accesibilidad (modos de contraste y tooltips informativos)
-✅ Interpreta ecuaciones diferenciales en notación simbólica
-✅ Resuelve paso a paso con explicaciones detalladas
-✅ Formatea los resultados con soporte LaTeX para uso académico
-✅ Genera audio en español explicando cada paso
-✅ API completa que devuelve JSON con título, descripción y expresiones en LaTeX
-✅ Proporciona una ruta para escuchar la explicación en voz alta (/static/audio/results.mp3)
-
+- ✅ Interfaz en React
+- ✅ Accesibilidad
+- ✅ Notación simbólica
+- ✅ Paso a paso explicativo
+- ✅ Soporte LaTeX
+- ✅ Audio en español
+- ✅ API JSON
+- ✅ Ruta de audio
+  
 ## 📦 Instalación
 
 Antes de ejecutar el servidor, asegúrate de instalar las dependencias necesarias:
@@ -113,16 +113,16 @@ Puedes acceder al audio generado en:
 
 ## 🌓 Modos de contraste
 
--**Amarillo sobre negro (Alto contraste):**
+- **Amarillo sobre negro (Alto contraste):**
 ![Amarillo sobre negro (Alto contraste) ](https://github.com/user-attachments/assets/22107dcd-8c4c-422d-bce2-2f30cee499e6)
 
--**Azul oscuro sobre blanco:**
+- **Azul oscuro sobre blanco:**
 ![Azul oscuro sobre blanco](https://github.com/user-attachments/assets/00535e10-a904-4d13-a57c-2e22fdb20171)
 
--**Rosa sobre gris oscuro:**
+- **Rosa sobre gris oscuro:**
 ![Rosa sobre gris oscuro](https://github.com/user-attachments/assets/1db13710-371e-4924-9ff8-f89ce495d5b2)
 
--**Verde sobre negro:**
+- **Verde sobre negro:**
 ![Verde sobre negro](https://github.com/user-attachments/assets/b10b6cc8-bff0-48f5-a64b-63bd726f00ff)
 
 ## 📚 Dependencias
