@@ -1,4 +1,5 @@
 import React, { useState, useEffect } from 'react';
+import Tooltip from './Tooltip'; // Asegúrate que la ruta es correcta
 
 // Limpia y normaliza la ecuación
 function sanitizeEquation(equation) {
@@ -73,6 +74,9 @@ export default function SolverForm({ onSolve, loading }) {
         initialValues[`d${i}y0`] = '';
       }
       setConditionValues(initialValues);
+    } else {
+      setOrder(0);
+      setConditionValues({});
     }
   }, [equation]);
 
@@ -104,7 +108,7 @@ export default function SolverForm({ onSolve, loading }) {
     const payload = {
       equations: [parsedEquation],
       variables: [varX, varY],
-      initial_conditions: initial_conditions,
+      initial_conditions,
     };
 
     onSolve(payload);
@@ -114,14 +118,20 @@ export default function SolverForm({ onSolve, loading }) {
     const conditions = [];
 
     conditions.push(
-      <div key="y0">
+      <div className="input-tooltip-wrapper" key="y0">
         <label htmlFor="y0">{varY}({x0 || 'x₀'})</label>
-        <input
-          id="y0"
-          type="number"
-          value={y0}
-          onChange={(e) => setY0(e.target.value)}
-        />
+        <div className="input-tooltip-wrapper">
+          <input
+            id="y0"
+            type="number"
+            value={y0}
+            onChange={(e) => setY0(e.target.value)}
+          />
+          <div className="tooltip-container">
+            <span className="question-icon">?</span>
+            <span className="tooltip-text">{`Valor inicial de ${varY} en ${x0 || 'x₀'}`}</span>
+          </div>
+        </div>
       </div>
     );
 
@@ -131,15 +141,21 @@ export default function SolverForm({ onSolve, loading }) {
         : `${varY}${'\''.repeat(i)}(${x0 || 'x₀'})`;
 
       conditions.push(
-        <div key={`d${i}y0`}>
+        <div className="input-tooltip-wrapper" key={`d${i}y0`}>
           <label htmlFor={`d${i}y0`}>{derivativeLabel}</label>
-          <input
-            id={`d${i}y0`}
-            name={`d${i}y0`}
-            type="number"
-            value={conditionValues[`d${i}y0`] || ''}
-            onChange={(e) => handleConditionChange(`d${i}y0`, e.target.value)}
-          />
+          <div className="input-tooltip-wrapper">
+            <input
+              id={`d${i}y0`}
+              name={`d${i}y0`}
+              type="number"
+              value={conditionValues[`d${i}y0`] || ''}
+              onChange={(e) => handleConditionChange(`d${i}y0`, e.target.value)}
+            />
+            <div className="tooltip-container">
+              <span className="question-icon">?</span>
+              <span className="tooltip-text">{`Valor inicial de la derivada ${derivativeLabel}`}</span>
+            </div>
+          </div>
         </div>
       );
     }
@@ -148,52 +164,76 @@ export default function SolverForm({ onSolve, loading }) {
   };
 
   return (
-    <form onSubmit={handleSubmit} aria-labelledby="solve-form">
-      <div>
+    <form onSubmit={handleSubmit} aria-labelledby="solve-form" className="solver-form">
+      <div className="input-tooltip-wrapper">
         <label htmlFor="equation">Ecuación (p.ej. y'' + 3y' - 4y = 0)</label>
-        <input
-          id="equation"
-          type="text"
-          value={equation}
-          onChange={(e) => setEquation(e.target.value)}
-          required
-          placeholder="Ejemplo: y'' + 3y' - 4y = 0"
-        />
+        <div className="input-tooltip-wrapper">
+          <input
+            id="equation"
+            type="text"
+            value={equation}
+            onChange={(e) => setEquation(e.target.value)}
+            required
+            placeholder="Ejemplo: y'' + 3y' - 4y = 0"
+          />
+          <div className="tooltip-container">
+            <span className="question-icon">?</span>
+            <span className="tooltip-text">Escribe la ecuación diferencial aquí</span>
+          </div>
+        </div>
       </div>
 
-      <div>
+      <div className="input-tooltip-wrapper">
         <label htmlFor="varX">Variable independiente</label>
-        <input
-          id="varX"
-          type="text"
-          value={varX}
-          onChange={(e) => setVarX(e.target.value)}
-          required
-        />
+        <div className="input-tooltip-wrapper">
+          <input
+            id="varX"
+            type="text"
+            value={varX}
+            onChange={(e) => setVarX(e.target.value)}
+            required
+          />
+          <div className="tooltip-container">
+            <span className="question-icon">?</span>
+            <span className="tooltip-text">Variable independiente, típicamente 'x'</span>
+          </div>
+        </div>
       </div>
 
-      <div>
+      <div className="input-tooltip-wrapper">
         <label htmlFor="varY">Función dependiente</label>
-        <input
-          id="varY"
-          type="text"
-          value={varY}
-          onChange={(e) => setVarY(e.target.value)}
-          required
-        />
+        <div className="input-tooltip-wrapper">
+          <input
+            id="varY"
+            type="text"
+            value={varY}
+            onChange={(e) => setVarY(e.target.value)}
+            required
+          />
+          <div className="tooltip-container">
+            <span className="question-icon">?</span>
+            <span className="tooltip-text">Función dependiente, típicamente 'y'</span>
+          </div>
+        </div>
       </div>
 
       <fieldset>
         <legend>Condiciones iniciales {order > 0 ? `(Ecuación de orden ${order})` : ''}</legend>
 
-        <div>
+        <div className="input-tooltip-wrapper">
           <label htmlFor="x0">x₀</label>
-          <input
-            id="x0"
-            type="number"
-            value={x0}
-            onChange={(e) => setX0(e.target.value)}
-          />
+          <div className="input-tooltip-wrapper">
+            <input
+              id="x0"
+              type="number"
+              value={x0}
+              onChange={(e) => setX0(e.target.value)}
+            />
+            <div className="tooltip-container">
+              <span className="question-icon">?</span>
+              <span className="tooltip-text">Punto inicial para la variable independiente</span>
+            </div>
+          </div>
         </div>
 
         {renderInitialConditions()}

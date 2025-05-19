@@ -4,12 +4,10 @@ import re
 def solve_step_by_step(equations, variables, initial_conditions=None):
     steps = []
 
-    # Definir las variables
     x = symbols(variables[0])
     y_func = Function(variables[1])
     y = y_func(x)
 
-    # Diccionario local para evaluar expresiones
     local_dict = {
         variables[0]: x,
         variables[1]: y_func,
@@ -17,29 +15,23 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
     }
 
     def preprocess_equation(eq):
-        # Reemplazar potencias tipo x^2 por x**2
         eq = eq.replace('^', '**')
 
-        # Reemplazar derivadas: y'', y''', ..., hasta y^{(10)}
         for order in range(10, 0, -1):
             apostrophes = "'" * order
             pattern = rf"\b{variables[1]}{re.escape(apostrophes)}\b"
             replacement = f"Derivative({variables[1]}({variables[0]}), {variables[0]}, {order})"
             eq = re.sub(pattern, replacement, eq)
 
-        # Reemplazo de y' = primera derivada (solo si no se capturó antes)
         eq = re.sub(rf"\b{variables[1]}'\b", f'Derivative({variables[1]}({variables[0]}), {variables[0]})', eq)
 
-        # Insertar * entre número y letra
         eq = re.sub(r'(\d)([a-zA-Z\(])', r'\1*\2', eq)
 
-        # Asegurar y → y(x) si no es derivada ni parte de algo ya reemplazado
         eq = re.sub(rf"\b{variables[1]}\b(?!\()", f'{variables[1]}({variables[0]})', eq)
 
         return eq
 
     try:
-        # Limpiar comillas extra si existen
         raw_eq = equations[0].strip('"').strip("'")
         equation_str = preprocess_equation(raw_eq)
 
@@ -58,7 +50,6 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             "latex_description": f"\\text{{Se reescribe como: }} {latex(eq)}"
         })
 
-        # Resolver la ecuación general
         sol = dsolve(eq, y)
         steps.append({
             "title": "Solución general",
@@ -66,7 +57,6 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             "latex_description": f"y(x) = {latex(sol.rhs)}"
         })
 
-        # Aplicar condiciones iniciales si existen
         if initial_conditions:
             x0 = initial_conditions.get("x0")
             y0 = initial_conditions.get("y0")
@@ -161,7 +151,6 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
                         "latex_description": f"\\text{{Se usa la condición }} y^{{(10)}}({x0}) = {d10y0}"
                     })
 
-            # Resolver con condiciones iniciales si hay alguna
             if ics:
                 particular_solution = dsolve(eq, y, ics=ics)
                 simplified = simplify(particular_solution.rhs)
