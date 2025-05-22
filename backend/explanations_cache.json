@@ -1,0 +1,5 @@
+{
+  "7907826177603161547": "Explicación de los pasos de la solución:\n\nInterpretación de la ecuación: \\text{Se reescribe como: } y{\\left(x \\right)} + \\frac{d}{d x} y{\\left(x \\right)} = x\n\nSolución general: y(x) = C_{1} e^{- x} + x - 1\n\nCondición inicial aplicada: \\text{Se usa la condición } y(0) = -2\n\nSolución particular: y(x) = x - 1 - e^{- x}\n",
+  "1283692811206298751": "Explicación de los pasos de la solución:\n\nInterpretación de la ecuación: \\text{Se reescribe como: } y{\\left(x \\right)} + \\frac{d}{d x} y{\\left(x \\right)} = x\n\nSolución general: y(x) = C_{1} e^{- x} + x - 1\n\nCondición inicial aplicada: \\text{Se usa la condición } y(0) = -3\n\nSolución particular: y(x) = x - 1 - 2 e^{- x}\n",
+  "3401305199055077797": "Explicación de los pasos de la solución:\n\nInterpretación de la ecuación: \\text{Se reescribe como: } y{\\left(x \\right)} + \\frac{d}{d x} y{\\left(x \\right)} = x\n\nSolución general: y(x) = C_{1} e^{- x} + x - 1\n\nCondición inicial aplicada: \\text{Se usa la condición } y(0) = -2\n\nSolución particular: y(x) = x - 1 - e^{- x}\n"
+}

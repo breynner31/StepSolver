@@ -152,14 +152,29 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
                     })
 
             if ics:
-                particular_solution = dsolve(eq, y, ics=ics)
-                simplified = simplify(particular_solution.rhs)
-
-                steps.append({
-                    "title": "Solución particular",
-                    "description": f"y(x) = {str(simplified)}",
-                    "latex_description": f"y(x) = {latex(simplified)}"
-                })
+                try:
+                    particular_solution = dsolve(eq, y, ics=ics)
+                    simplified = simplify(particular_solution.rhs)
+                    
+                    # Verificar si la solución es demasiado compleja
+                    if len(str(simplified)) > 200:  # Ajusta este número según necesites
+                        steps.append({
+                            "title": "Solución particular",
+                            "description": "La solución particular es demasiado compleja para mostrarse",
+                            "latex_description": "\\text{La solución particular es demasiado compleja para mostrarse}"
+                        })
+                    else:
+                        steps.append({
+                            "title": "Solución particular",
+                            "description": f"y(x) = {str(simplified)}",
+                            "latex_description": f"y(x) = {latex(simplified)}"
+                        })
+                except Exception as e:
+                    steps.append({
+                        "title": "Solución particular",
+                        "description": "No se pudo encontrar una solución particular",
+                        "latex_description": "\\text{No se pudo encontrar una solución particular}"
+                    })
 
     except Exception as e:
         print(f"[ERROR] {str(e)}")

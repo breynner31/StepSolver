@@ -10,7 +10,9 @@ export default function StepsDisplay({ steps }) {
       {steps.map((step, i) => (
         <article key={i} className="step">
           <h3 className="step-title">{step.title}</h3>
-          {step.latex_description && <BlockMath>{step.latex_description}</BlockMath>}
+          <div className="step-content">
+            {step.latex_description && <BlockMath>{step.latex_description}</BlockMath>}
+          </div>
         </article>
       ))}
     </section>

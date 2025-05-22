@@ -1,0 +1,28 @@
+Interpretación de la ecuación:
+
+Se reescribe como: seis...  multiplicado por... la segunda derivada de y... respecto a x... menos... cinco... multiplicado por... la tercera derivada de y... respecto a x... más... la cuarta derivada de y... respecto a x... igual a... cero.
+
+
+Solución general:
+
+y... abre paréntesis... x... cierra paréntesis... igual a... C mayúscula... subíndice uno... más... C mayúscula... subíndice dos... x... más... C mayúscula... subíndice tres... e... exponencial... dos x... más... C mayúscula... subíndice cuatro... e... exponencial... tres x.
+
+
+Condición inicial aplicada:
+
+Se usa la condición... y... abre paréntesis... cero... cierra paréntesis... igual a... menos dos.
+
+
+Condición inicial aplicada:
+
+Se usa la condición... y... dos primas... abre paréntesis... cero... cierra paréntesis... igual a... dos.
+
+
+Condición inicial aplicada:
+
+Se usa la condición... y... tres primas... abre paréntesis... cero... cierra paréntesis... igual a... tres.
+
+
+Solución particular:
+
+y... abre paréntesis... x... cierra paréntesis... igual a... C mayúscula... subíndice dos... x... menos... e... exponencial... tres x... partido entre nueve... más... tres... e... exponencial... dos x... partido entre cuatro... menos... noventa y cinco... partido entre treinta y seis.
