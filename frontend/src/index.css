@@ -3,6 +3,7 @@
   --color-text: #ffffff;
   --color-input: #1e1e1e;
   --color-border: #444;
+  --color-focus: #ffbf47;
 }
 
 body {
@@ -10,6 +11,7 @@ body {
   background-color: var(--color-bg);
   color: var(--color-text);
   font-family: sans-serif;
+  line-height: 1.5;
 }
 
 input,
@@ -20,8 +22,27 @@ textarea {
   border: 1px solid var(--color-border);
   padding: 8px;
   border-radius: 4px;
+  font-size: 1rem;
+}
+
+input:focus,
+select:focus,
+textarea:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
 }
 
 label {
   color: var(--color-text);
+}
+
+/* Estilos para KaTeX */
+.katex {
+  font-size: 1.1em;
+}
+
+.katex-display {
+  overflow-x: auto;
+  overflow-y: hidden;
+  padding: 1em 0;
 }

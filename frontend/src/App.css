@@ -211,6 +211,7 @@ legend {
   --color-secondary: #cccc00;
   --color-border: #ffff00;
   --color-focus: #ff00ff;
+  --color-input: #1a1a1a;
 }
 
 .theme-blue-on-white {
@@ -220,6 +221,7 @@ legend {
   --color-secondary: #2244aa;
   --color-border: #003366;
   --color-focus: #ff6600;
+  --color-input: #f0f0f0;
 }
 
 .theme-pink-on-gray {
@@ -229,6 +231,7 @@ legend {
   --color-secondary: #ff1493;
   --color-border: #ffc0cb;
   --color-focus: #00ffff;
+  --color-input: #2a2a2a;
 }
 
 .theme-green-on-black {
@@ -238,4 +241,83 @@ legend {
   --color-secondary: #32cd32;
   --color-border: #98fb98;
   --color-focus: #00ff00;
+  --color-input: #1a1a1a;
+}
+
+/* Estilos para los pasos de solución */
+.steps-section {
+  margin: 2rem 0;
+  padding: 1rem;
+  border-radius: 8px;
+  background-color: var(--color-bg);
+}
+
+.step {
+  margin: 1rem 0;
+  padding: 1rem;
+  border: 1px solid var(--color-border);
+  border-radius: 4px;
+  background-color: var(--color-bg);
+}
+
+.step-title {
+  color: var(--color-text);
+  margin-bottom: 0.5rem;
+  font-size: 1.1rem;
+}
+
+.step-content {
+  color: var(--color-text);
+}
+
+/* Estilos para KaTeX */
+.katex {
+  color: var(--color-text) !important;
+}
+
+.katex-display {
+  margin: 1rem 0;
+  padding: 0.5rem;
+  background-color: var(--color-bg);
+  border-radius: 4px;
+}
+
+/* Estilos para inputs y campos de formulario */
+input, select, textarea {
+  background-color: var(--color-input);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
+  border-radius: 4px;
+  width: 100%;
+}
+
+input:focus, select:focus, textarea:focus {
+  outline: 2px solid var(--color-focus);
+  outline-offset: 2px;
+}
+
+/* Estilos para tooltips */
+.tooltip-container {
+  position: relative;
+  display: inline-block;
+}
+
+.tooltip-text {
+  visibility: hidden;
+  background-color: var(--color-bg);
+  color: var(--color-text);
+  border: 1px solid var(--color-border);
+  padding: 0.5rem;
+  border-radius: 4px;
+  position: absolute;
+  z-index: 1;
+  bottom: 125%;
+  left: 50%;
+  transform: translateX(-50%);
+  white-space: nowrap;
+}
+
+.tooltip-container:hover .tooltip-text {
+  visibility: visible;
 }
