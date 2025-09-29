@@ -125,7 +125,7 @@ select {
   padding: 8px;
   position: absolute;
   z-index: 1;
-  top: 50%;
+  top: 185%;
   left: 110%;
   transform: translateY(-50%);
   font-size: 12px;
@@ -205,12 +205,12 @@ legend {
 }
 
 .theme-yellow-on-black {
-  --color-bg: #000000;
-  --color-text: #ffff00;
-  --color-primary: #ffff00;
-  --color-secondary: #cccc00;
-  --color-border: #ffff00;
-  --color-focus: #ff00ff;
+  --color-bg: #0a0a0a;
+  --color-text: #fbbf24;
+  --color-primary: #f59e0b;
+  --color-secondary: #d97706;
+  --color-border: #fbbf24;
+  --color-focus: #06b6d4;
   --color-input: #1a1a1a;
 }
 
@@ -225,13 +225,13 @@ legend {
 }
 
 .theme-pink-on-gray {
-  --color-bg: #1e1e1e;
-  --color-text: #ffc0cb;
-  --color-primary: #ff69b4;
-  --color-secondary: #ff1493;
-  --color-border: #ffc0cb;
-  --color-focus: #00ffff;
-  --color-input: #2a2a2a;
+  --color-bg: #2d2d2d;
+  --color-text: #e8a8c8;
+  --color-primary: #d946ef;
+  --color-secondary: #a855f7;
+  --color-border: #e8a8c8;
+  --color-focus: #06b6d4;
+  --color-input: #3a3a3a;
 }
 
 .theme-green-on-black {
@@ -305,17 +305,17 @@ input:focus, select:focus, textarea:focus {
 
 .tooltip-text {
   visibility: hidden;
-  background-color: var(--color-bg);
   color: var(--color-text);
-  border: 1px solid var(--color-border);
-  padding: 0.5rem;
-  border-radius: 4px;
   position: absolute;
-  z-index: 1;
-  bottom: 125%;
+  z-index: 1000;
   left: 50%;
   transform: translateX(-50%);
   white-space: nowrap;
+  font-size: 13px;
+  font-weight: 500;
+  text-align: center;
+  text-shadow: 1px 1px 2px rgba(0, 0, 0, 0.8);
+  width: 415px;
 }
 
 .tooltip-container:hover .tooltip-text {

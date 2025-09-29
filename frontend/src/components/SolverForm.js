@@ -1,5 +1,4 @@
 import React, { useState, useEffect } from 'react';
-import Tooltip from './Tooltip'; // Asegúrate que la ruta es correcta
 
 // Limpia y normaliza la ecuación
 function sanitizeEquation(equation) {

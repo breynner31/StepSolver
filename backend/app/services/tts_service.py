@@ -2,11 +2,20 @@ import os
 from gtts import gTTS
 from .gemini_service import generate_audio_explanation
 
-def generate_audio_from_steps(steps, output_path='static/audio/results.mp3'):
+def generate_audio_from_steps(steps, output_path='static/audio/results.mp3', socketio=None):
     try:
         # Asegurarse de que el directorio existe
         os.makedirs(os.path.dirname(output_path), exist_ok=True)
         
+        # Progreso: Generando explicación con IA
+        if socketio:
+            socketio.emit('progress', {
+                'step': 3,
+                'total': 4,
+                'message': 'Generando explicación con IA...',
+                'percentage': 80
+            })
+
         # Generar explicación usando Gemini
         explanation = generate_audio_explanation(steps)
         
@@ -35,6 +44,15 @@ def generate_audio_from_steps(steps, output_path='static/audio/results.mp3'):
         if current_part:
             parts.append(current_part.strip())
         
+        # Progreso: Generando audio
+        if socketio:
+            socketio.emit('progress', {
+                'step': 3,
+                'total': 4,
+                'message': 'Convirtiendo texto a audio...',
+                'percentage': 90
+            })
+
         # Generar audio para cada parte
         audio_files = []
         for i, part in enumerate(parts):
@@ -44,6 +62,15 @@ def generate_audio_from_steps(steps, output_path='static/audio/results.mp3'):
             temp_path = f"{output_path}.part{i}.mp3"
             print(f"Generando audio para parte {i+1} de {len(parts)}")
             print(f"Longitud del texto: {len(part)} caracteres")
+            
+            # Progreso detallado para cada parte
+            if socketio:
+                socketio.emit('progress', {
+                    'step': 3,
+                    'total': 4,
+                    'message': f'Generando audio parte {i+1} de {len(parts)}...',
+                    'percentage': 85 + (i * 10 // len(parts))
+                })
             
             tts = gTTS(text=part, lang='es', slow=False)
             tts.save(temp_path)

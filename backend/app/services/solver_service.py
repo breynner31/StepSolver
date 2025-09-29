@@ -1,7 +1,33 @@
 from sympy import symbols, Function, Eq, dsolve, Derivative, simplify, latex, sympify
 import re
+import threading
+import time
 
-def solve_step_by_step(equations, variables, initial_conditions=None):
+def timeout_wrapper(func, timeout_seconds):
+    """Wrapper simple para timeout que funciona en Windows"""
+    result = [None]
+    exception = [None]
+    
+    def target():
+        try:
+            result[0] = func()
+        except Exception as e:
+            exception[0] = e
+    
+    thread = threading.Thread(target=target)
+    thread.daemon = True
+    thread.start()
+    thread.join(timeout=timeout_seconds)
+    
+    if thread.is_alive():
+        raise TimeoutError("La operación tardó demasiado tiempo")
+    
+    if exception[0]:
+        raise exception[0]
+    
+    return result[0]
+
+def solve_step_by_step(equations, variables, initial_conditions=None, socketio=None):
     steps = []
 
     x = symbols(variables[0])
@@ -32,6 +58,15 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
         return eq
 
     try:
+        # Progreso: Procesando ecuación
+        if socketio:
+            socketio.emit('progress', {
+                'step': 1,
+                'total': 4,
+                'message': 'Procesando y validando la ecuación...',
+                'percentage': 30
+            })
+
         raw_eq = equations[0].strip('"').strip("'")
         equation_str = preprocess_equation(raw_eq)
 
@@ -50,12 +85,66 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
             "latex_description": f"\\text{{Se reescribe como: }} {latex(eq)}"
         })
 
-        sol = dsolve(eq, y)
+        # Detectar el orden de la ecuación
+        max_order = 0
+        for term in eq.lhs.args:
+            if isinstance(term, Derivative):
+                max_order = max(max_order, term.args[2] if len(term.args) > 2 else 1)
+        
         steps.append({
-            "title": "Solución general",
-            "description": f"y(x) = {str(sol.rhs)}",
-            "latex_description": f"y(x) = {latex(sol.rhs)}"
+            "title": "Análisis de la ecuación",
+            "description": f"Ecuación diferencial de orden {max_order}",
+            "latex_description": f"\\text{{Ecuación diferencial de orden }} {max_order}"
         })
+
+        # Progreso: Iniciando resolución
+        if socketio:
+            socketio.emit('progress', {
+                'step': 2,
+                'total': 4,
+                'message': f'Resolviendo ecuación diferencial de orden {max_order}...',
+                'percentage': 50
+            })
+
+        # Intentar resolver con timeout
+        try:
+            def solve_equation():
+                print(f"[INFO] Intentando resolver ecuación de orden {max_order}...")
+                return dsolve(eq, y)
+            
+            sol = timeout_wrapper(solve_equation, 30)  # 30 segundos de timeout
+            print(f"[INFO] Ecuación resuelta exitosamente")
+            
+            steps.append({
+                "title": "Solución general",
+                "description": f"y(x) = {str(sol.rhs)}",
+                "latex_description": f"y(x) = {latex(sol.rhs)}"
+            })
+
+            # Progreso: Ecuación resuelta
+            if socketio:
+                socketio.emit('progress', {
+                    'step': 2,
+                    'total': 4,
+                    'message': 'Ecuación resuelta exitosamente',
+                    'percentage': 60
+                })
+        except TimeoutError:
+            print(f"[WARNING] Timeout al resolver ecuación de orden {max_order}")
+            steps.append({
+                "title": "Solución general",
+                "description": f"La ecuación de orden {max_order} es demasiado compleja para resolver analíticamente en tiempo razonable. Se recomienda usar métodos numéricos.",
+                "latex_description": f"\\text{{La ecuación de orden }} {max_order} \\text{{ es demasiado compleja para resolver analíticamente}}"
+            })
+            return steps  # Retornar sin intentar condiciones iniciales
+        except Exception as e:
+            print(f"[ERROR] Error al resolver: {str(e)}")
+            steps.append({
+                "title": "Error en resolución",
+                "description": f"No se pudo resolver la ecuación: {str(e)}",
+                "latex_description": f"\\text{{No se pudo resolver la ecuación: }} {str(e)}"
+            })
+            return steps
 
         if initial_conditions:
             x0 = initial_conditions.get("x0")
@@ -152,9 +241,22 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
                     })
 
             if ics:
+                # Progreso: Aplicando condiciones iniciales
+                if socketio:
+                    socketio.emit('progress', {
+                        'step': 2,
+                        'total': 4,
+                        'message': 'Aplicando condiciones iniciales...',
+                        'percentage': 70
+                    })
+
                 try:
-                    particular_solution = dsolve(eq, y, ics=ics)
-                    simplified = simplify(particular_solution.rhs)
+                    def apply_conditions():
+                        print(f"[INFO] Aplicando condiciones iniciales...")
+                        particular_solution = dsolve(eq, y, ics=ics)
+                        return simplify(particular_solution.rhs)
+                    
+                    simplified = timeout_wrapper(apply_conditions, 20)  # 20 segundos adicionales
                     
                     # Verificar si la solución es demasiado compleja
                     if len(str(simplified)) > 200:  # Ajusta este número según necesites
@@ -169,11 +271,20 @@ def solve_step_by_step(equations, variables, initial_conditions=None):
                             "description": f"y(x) = {str(simplified)}",
                             "latex_description": f"y(x) = {latex(simplified)}"
                         })
-                except Exception as e:
+                    print(f"[INFO] Condiciones iniciales aplicadas exitosamente")
+                except TimeoutError:
+                    print(f"[WARNING] Timeout al aplicar condiciones iniciales")
                     steps.append({
                         "title": "Solución particular",
-                        "description": "No se pudo encontrar una solución particular",
-                        "latex_description": "\\text{No se pudo encontrar una solución particular}"
+                        "description": "Las condiciones iniciales son demasiado complejas para resolver en tiempo razonable",
+                        "latex_description": "\\text{Las condiciones iniciales son demasiado complejas para resolver en tiempo razonable}"
+                    })
+                except Exception as e:
+                    print(f"[ERROR] Error al aplicar condiciones iniciales: {str(e)}")
+                    steps.append({
+                        "title": "Solución particular",
+                        "description": f"No se pudo encontrar una solución particular: {str(e)}",
+                        "latex_description": f"\\text{{No se pudo encontrar una solución particular: }} {str(e)}"
                     })
 
     except Exception as e:

@@ -62,10 +62,7 @@ export default function AudioPlayer({ src }) {
           </button>
           
           <div className="progress-container">
-            <div 
-              className="progress-bar"
-              style={{ width: `${(currentTime / duration) * 100}%` }}
-            />
+
             <input
               type="range"
               min="0"

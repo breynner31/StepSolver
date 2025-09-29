@@ -1,14 +1,18 @@
 import React, { useState, useEffect } from 'react';
+import io from 'socket.io-client';
 import SolverForm from './components/SolverForm';
 import StepsDisplay from './components/StepsDisplay';
 import AudioPlayer from './components/AudioPlayer';
 import Tooltip from './components/Tooltip';
+import ProgressBar from './components/ProgressBar';
 import './App.css';
 
 export default function App() {
   const [result, setResult] = useState(null);
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState('');
+  const [progress, setProgress] = useState({ percentage: 0, message: '', isVisible: false });
+  const [socket, setSocket] = useState(null);
 
   useEffect(() => {
     document.body.className = '';
@@ -17,8 +21,38 @@ export default function App() {
     }
   }, [theme]);
 
+  // Configurar WebSocket
+  useEffect(() => {
+    const newSocket = io('http://localhost:5000');
+    
+    newSocket.on('connect', () => {
+      console.log('Conectado al servidor de progreso');
+    });
+
+    newSocket.on('progress', (data) => {
+      setProgress({
+        percentage: data.percentage,
+        message: data.message,
+        isVisible: true
+      });
+    });
+
+    newSocket.on('status', (data) => {
+      console.log('Estado del servidor:', data.message);
+    });
+
+    setSocket(newSocket);
+
+    return () => {
+      newSocket.close();
+    };
+  }, []);
+
   const handleSolve = async (payload) => {
     setLoading(true);
+    setProgress({ percentage: 0, message: 'Iniciando...', isVisible: true });
+    setResult(null); // Limpiar resultado anterior
+    
     try {
       const res = await fetch('/api/solve', {
         method: 'POST',
@@ -37,6 +71,10 @@ export default function App() {
       alert('Error al resolver la ecuación');
     } finally {
       setLoading(false);
+      // Ocultar barra de progreso después de un breve delay
+      setTimeout(() => {
+        setProgress(prev => ({ ...prev, isVisible: false }));
+      }, 1000);
     }
   };
 
@@ -67,6 +105,12 @@ export default function App() {
       </div>
 
       <SolverForm onSolve={handleSolve} loading={loading} />
+
+      <ProgressBar 
+        progress={progress.percentage} 
+        message={progress.message} 
+        isVisible={progress.isVisible} 
+      />
 
       {result && (
         <>
