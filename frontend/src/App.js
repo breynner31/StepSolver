@@ -12,7 +12,7 @@ export default function App() {
   const [loading, setLoading] = useState(false);
   const [theme, setTheme] = useState('');
   const [progress, setProgress] = useState({ percentage: 0, message: '', isVisible: false });
-  const [socket, setSocket] = useState(null);
+  const [, setSocket] = useState(null);
 
   useEffect(() => {
     document.body.className = '';
